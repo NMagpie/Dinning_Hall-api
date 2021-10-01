@@ -1,5 +1,7 @@
 package Order;
 
+import Foods.Foods;
+
 import java.util.ArrayList;
 
 public class Order {
@@ -12,13 +14,17 @@ public class Order {
 
     private int priority;
 
-    private int max_wait;
+    private double max_wait=0;
 
     public Order(ArrayList<Integer> items) {
         id = count++;
         this.items = items;
+        this.priority = (int)(Math.random()*5+1);
 
-        
+        for (Integer item : items)
+            if (new Foods(item).getPreparation_time() >max_wait) max_wait= new Foods(item).getPreparation_time();
+
+            max_wait = 1.3 * max_wait;
 
     }
 
@@ -34,7 +40,7 @@ public class Order {
         return priority;
     }
 
-    public int getMax_wait() {
+    public double getMax_wait() {
         return max_wait;
     }
 }
