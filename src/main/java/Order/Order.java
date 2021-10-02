@@ -8,7 +8,7 @@ public class Order {
 
     private static int count = 0;
 
-    private int id;
+    private final int id = count++;
 
     private ArrayList<Integer> items;
 
@@ -19,8 +19,6 @@ public class Order {
     private long pickupTime;
 
     public Order() {
-
-        id = count++;
 
         items= new ArrayList<>();
 
