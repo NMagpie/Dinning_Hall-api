@@ -33,10 +33,7 @@ public class Table {
         this.state=state;
     }
 
-}
-
-enum TableState {
-    Free,
-    WaitingMakingOrder,
-    WaitingOrder
+    public TableState getState() {
+        return state;
+    }
 }
