@@ -16,15 +16,29 @@ public class Order {
 
     private double max_wait=0;
 
-    public Order(ArrayList<Integer> items) {
+    private long pickupTime;
+
+    public Order() {
+
         id = count++;
-        this.items = items;
-        this.priority = (int)(Math.random()*5+1);
+
+        items= new ArrayList<>();
+
+        int numberOfItems = (int) (Math.random()*3+1);
+
+        while (numberOfItems>0) {
+            items.add((int) (Math.random()*10+1));
+            numberOfItems--;
+        }
+
+        this.priority = (int) (Math.random()*5+1);
 
         for (Integer item : items)
             if (new Foods(item).getPreparation_time() >max_wait) max_wait= new Foods(item).getPreparation_time();
 
             max_wait = 1.3 * max_wait;
+
+            pickupTime= System.currentTimeMillis() / 1000L;
 
     }
 
