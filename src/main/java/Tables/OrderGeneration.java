@@ -18,10 +18,11 @@ public class OrderGeneration implements Runnable {
 
         while (true)
         {
-            try { DinningHallApiApplication.timeUnit.sleep(7); }
+            try { DinningHallApiApplication.timeUnit.sleep(7);
+            }
             catch (InterruptedException e) { e.printStackTrace(); }
 
-            if (Math.random()>0.7)
+            if (Math.random()>0.5)
             {
                 do tableId = (int) (Math.random() * tables.length-1 + 0);
                 while (tables[tableId].getState()!=TableState.Free);

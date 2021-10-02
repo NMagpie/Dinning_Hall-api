@@ -2,9 +2,11 @@ package com.example.dinninghallapi;
 
 import Tables.OrderGeneration;
 import Tables.Table;
+import Waiter.Waiter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +25,7 @@ public class DinningHallApiApplication {
 		//Table[] tables = new Table[scanner.nextInt()];
 
 		Table[] tables = new Table[10];
-		for (int i=0; i< tables.length; i++)
+		for (int i = 0; i < tables.length; i++)
 			tables[i] = new Table();
 
 		OrderGeneration orderGeneration = new OrderGeneration(tables);
@@ -32,7 +34,16 @@ public class DinningHallApiApplication {
 
 		//scanner.close();
 
-		int waiters = tables.length-2;
+		ArrayList<Waiter> waiters = new ArrayList<>();
+		for (int i = 0; i < tables.length-2; i++)
+		{
+			waiters.add(new Waiter(tables));
+			new Thread(waiters.get(i)).start();
+		}
+
+		while (true) {
+			System.out.print("");
+		}
 
 	}
 

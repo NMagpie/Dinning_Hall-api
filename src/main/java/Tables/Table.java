@@ -7,29 +7,39 @@ public class Table {
 
     private static int count = 0;
 
-    private int id;
+    private final int id = count++;
 
-    private TableState state;
+    private TableState state = TableState.Free;
 
     private Order order;
 
     public Table() {
-        id = count++;
-        this.state = TableState.Free;
     }
 
-    public synchronized void generateOrder() {
-        System.out.println("Table "+id+ " Generating order...");
-
+    public void generateOrder() {
         order = new Order();
 
-        System.out.println("Table "+id+ " Order is Ready!");
+        System.out.println("Table "+id+ " Order "+order.getId()+" was generated!");
     }
 
     public synchronized Order makeOrder() throws InterruptedException {
         DinningHallApiApplication.timeUnit.sleep(7);
+
+        state = TableState.WaitingOrder;
+
         order.setPickupTime();
+
         return order;
+    }
+
+    public synchronized void receiveOrder() {
+
+        state = TableState.Free;
+
+    }
+
+    public int getId() {
+        return id;
     }
 
     public synchronized Order getOrder() {
