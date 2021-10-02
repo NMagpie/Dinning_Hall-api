@@ -38,8 +38,10 @@ public class Order {
 
             max_wait = 1.3 * max_wait;
 
-            pickupTime= System.currentTimeMillis() / 1000L;
+    }
 
+    public void setPickupTime() {
+        pickupTime= System.currentTimeMillis() / 1000L;
     }
 
     public int getId() {
