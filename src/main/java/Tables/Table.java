@@ -1,8 +1,7 @@
 package Tables;
 
 import Order.Order;
-
-import java.util.concurrent.TimeUnit;
+import com.example.dinninghallapi.DinningHallApiApplication;
 
 public class Table {
 
@@ -19,21 +18,29 @@ public class Table {
         this.state = TableState.Free;
     }
 
-    public void generateOrder() throws InterruptedException {
-        System.out.println("Generating order...");
-        TimeUnit.SECONDS.sleep((int)(Math.random()*4+2));
+    public synchronized void generateOrder() {
+        System.out.println("Table "+id+ " Generating order...");
+
         order = new Order();
+
+        System.out.println("Table "+id+ " Order is Ready!");
     }
 
-    public Order getOrder() {
+    public synchronized Order makeOrder() throws InterruptedException {
+        DinningHallApiApplication.timeUnit.sleep(7);
+        order.setPickupTime();
         return order;
     }
 
-    public void switchState(TableState state) {
+    public synchronized Order getOrder() {
+        return order;
+    }
+
+    public synchronized void switchState(TableState state) {
         this.state=state;
     }
 
-    public TableState getState() {
+    public synchronized TableState getState() {
         return state;
     }
 }
