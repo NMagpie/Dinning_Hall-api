@@ -42,6 +42,10 @@ public class Order {
         pickupTime= System.currentTimeMillis() / 1000L;
     }
 
+    public long getPickupTime() {
+        return pickupTime;
+    }
+
     public int getId() {
         return id;
     }
