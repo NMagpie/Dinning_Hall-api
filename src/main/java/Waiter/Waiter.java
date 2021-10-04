@@ -6,9 +6,12 @@ import Tables.TableState;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+
+import static com.example.dinninghallapi.DinningHallApiApplication.timeUnit;
 
 public class Waiter implements Runnable{
 
@@ -25,18 +28,31 @@ public class Waiter implements Runnable{
     @Override
     public void run() {
 
+        URL url;
+        HttpURLConnection con = null;
+        OutputStream wr;
+
         try {
-            URL url = new URL("www.google.com");
-            URLConnection con = url.openConnection();
+            url = new URL("https://postman-echo.com/post");
+            con = (HttpURLConnection) url.openConnection();
+            con.setDoOutput(true);
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type","application/json; charset=UTF-8");
+            con.setConnectTimeout(5000);
+            con.setReadTimeout(5000);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         Order order = null;
 
         JSONObject jo;
 
         while (true) {
+
+            try { timeUnit.sleep(1); }
+            catch (InterruptedException e) { e.printStackTrace(); }
 
             for (Table table : tables)
                 synchronized (table){
@@ -57,6 +73,14 @@ public class Waiter implements Runnable{
                     jo.put("priority",order.getPriority());
                     jo.put("max_wait",order.getMax_wait());
                     jo.put("pick_up_time",order.getPickupTime());
+
+                    try {
+                        wr = con.getOutputStream();
+                        byte[] out = jo.toString().getBytes(StandardCharsets.UTF_8);
+                        wr.write(out);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
                     //transmit HTTP request to the kitchen
 

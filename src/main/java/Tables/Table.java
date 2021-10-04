@@ -22,7 +22,7 @@ public class Table {
         System.out.println("Table "+id+ " Order "+order.getId()+" was generated!");
     }
 
-    public synchronized Order makeOrder() throws InterruptedException {
+    public /*synchronized*/ Order makeOrder() throws InterruptedException {
         DinningHallApiApplication.timeUnit.sleep(7);
 
         state = TableState.WaitingOrder;
@@ -46,11 +46,11 @@ public class Table {
         return order;
     }
 
-    public synchronized void switchState(TableState state) {
+    public /*synchronized*/ void switchState(TableState state) {
         this.state=state;
     }
 
-    public synchronized TableState getState() {
+    public /*synchronized*/ TableState getState() {
         return state;
     }
 }

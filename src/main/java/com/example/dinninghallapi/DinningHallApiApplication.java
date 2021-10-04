@@ -41,10 +41,6 @@ public class DinningHallApiApplication {
 			new Thread(waiters.get(i)).start();
 		}
 
-		while (true) {
-			System.out.print("");
-		}
-
 	}
 
 }

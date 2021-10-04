@@ -1,6 +1,6 @@
 package Tables;
 
-import com.example.dinninghallapi.DinningHallApiApplication;
+import static com.example.dinninghallapi.DinningHallApiApplication.timeUnit;
 
 
 public class OrderGeneration implements Runnable {
@@ -18,11 +18,10 @@ public class OrderGeneration implements Runnable {
 
         while (true)
         {
-            try { DinningHallApiApplication.timeUnit.sleep(7);
-            }
+            try { timeUnit.sleep(7); }
             catch (InterruptedException e) { e.printStackTrace(); }
 
-            if (Math.random()>0.5)
+            if (Math.random()>0.65)
             {
                 do tableId = (int) (Math.random() * tables.length-1 + 0);
                 while (tables[tableId].getState()!=TableState.Free);
