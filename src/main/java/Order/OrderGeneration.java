@@ -1,7 +1,9 @@
-package Tables;
+package Order;
+
+import Tables.Table;
+import Tables.TableState;
 
 import static com.example.dinninghallapi.DinningHallApiApplication.timeUnit;
-
 
 public class OrderGeneration implements Runnable {
 
@@ -14,6 +16,8 @@ public class OrderGeneration implements Runnable {
     @Override
     public void run() {
 
+        Thread.currentThread().setName("OrderGen");
+
         int tableId;
 
         while (true)
@@ -24,7 +28,7 @@ public class OrderGeneration implements Runnable {
             if (Math.random()>0.65)
             {
                 do tableId = (int) (Math.random() * tables.length-1 + 0);
-                while (tables[tableId].getState()!=TableState.Free);
+                while (tables[tableId].getState()!= TableState.Free);
 
                 tables[tableId].generateOrder();
                 tables[tableId].switchState(TableState.WaitingMakingOrder);

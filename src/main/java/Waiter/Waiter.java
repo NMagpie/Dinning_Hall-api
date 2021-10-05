@@ -7,9 +7,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.example.dinninghallapi.DinningHallApiApplication.timeUnit;
 
@@ -21,12 +22,17 @@ public class Waiter implements Runnable{
 
     Table[] tables;
 
-    public Waiter(Table[] tables) {
+    ReentrantLock[] locks;
+
+    public Waiter(Table[] tables, ReentrantLock[] locks) {
+        this.locks = locks;
         this.tables = tables;
     }
 
     @Override
     public void run() {
+
+        Thread.currentThread().setName("Waiter-"+id);
 
         URL url;
         HttpURLConnection con = null;
@@ -55,13 +61,14 @@ public class Waiter implements Runnable{
             catch (InterruptedException e) { e.printStackTrace(); }
 
             for (Table table : tables)
-                synchronized (table){
-                if (table.getState() == TableState.WaitingMakingOrder)
+                if ((table.getState() == TableState.WaitingMakingOrder)&&(locks[table.getId()].tryLock()))
                 {
+                    //synchronized (table){
                     try
                     {
                         order = table.makeOrder();
                         System.out.println("Waiter " + id + " taken order " + order.getId() + " table " + table.getId());
+                        //System.out.println("Time: "+ new Date(System.currentTimeMillis()));
                     } catch (InterruptedException e) { e.printStackTrace(); }
 
                     jo = new JSONObject();
@@ -84,7 +91,12 @@ public class Waiter implements Runnable{
 
                     //transmit HTTP request to the kitchen
 
-                }
+                //}
+
+                    //table.receiveOrder();
+
+                    locks[table.getId()].unlock();
+
             }
 
             //if HTTP request is taken, give it to the table

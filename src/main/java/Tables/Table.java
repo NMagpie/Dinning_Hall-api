@@ -23,7 +23,7 @@ public class Table {
     }
 
     public /*synchronized*/ Order makeOrder() throws InterruptedException {
-        DinningHallApiApplication.timeUnit.sleep(7);
+        DinningHallApiApplication.timeUnit.sleep((long) (Math.random()*4+2));
 
         state = TableState.WaitingOrder;
 
@@ -32,7 +32,7 @@ public class Table {
         return order;
     }
 
-    public synchronized void receiveOrder() {
+    public /*synchronized*/ void receiveOrder() {
 
         state = TableState.Free;
 
@@ -42,7 +42,7 @@ public class Table {
         return id;
     }
 
-    public synchronized Order getOrder() {
+    public /*synchronized*/ Order getOrder() {
         return order;
     }
 
