@@ -4,11 +4,11 @@ import com.example.dinninghallapi.order.Order;
 import com.example.dinninghallapi.tables.Table;
 import com.example.dinninghallapi.tables.TableState;
 import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,11 +24,11 @@ public class Waiter implements Runnable{
 
     private final ReentrantLock[] locks;
 
-    private static final String url = "http://localhost:8081/distribution";
+    private static final String url = "http://localhost:8080/order";
 
-    private HttpURLConnection con;
+    private RestTemplate restTemplate;
 
-    private OutputStream os;
+    private HttpHeaders headers;
 
     private final ArrayList<Integer> tablesReady = new ArrayList<>();
 
@@ -39,19 +39,18 @@ public class Waiter implements Runnable{
         orderIds.add(orderId);
     }
 
-    private void openConnection(){
-        try {
-        URL url = new URL(Waiter.url);
-        con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setDoOutput(true);
-        con.setRequestProperty("Content-Type","application/json; charset=UTF-8");
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        os = con.getOutputStream();
-        } catch (IOException e) {
-            System.out.println("ERROR: connection was canceled: "+e.getMessage());
-            System.out.println("Exiting program...");
+    private void openConnection() {
+        restTemplate = new RestTemplate();
+        headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+    }
+
+    private void sendPostRequest(JSONObject object) {
+        HttpEntity<String> request = new HttpEntity<>(object.toString(),headers);
+        String response = restTemplate.postForObject(url,request,String.class);
+        if (!response.equals("Success!")) {
+            System.out.println("No response! Exiting program...");
             System.exit(0);
         }
     }
@@ -66,7 +65,7 @@ public class Waiter implements Runnable{
 
         Thread.currentThread().setName("Waiter-"+id);
 
-        //openConnection();
+        openConnection();
 
         Order order = null;
 
@@ -98,14 +97,7 @@ public class Waiter implements Runnable{
                     jo.put("max_wait",order.getMax_wait());
                     jo.put("pick_up_time",order.getPickupTime());
 
-/*                    try {
-                        byte[] out = jo.toString().getBytes(StandardCharsets.UTF_8);
-                        os.write(out);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
-
-                    //transmit HTTP request to the kitchen
+                    sendPostRequest(jo);
 
                     locks[table.getId()].unlock();
 
