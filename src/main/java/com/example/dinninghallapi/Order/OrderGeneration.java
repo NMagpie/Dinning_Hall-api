@@ -22,17 +22,18 @@ public class OrderGeneration implements Runnable {
 
         while (true)
         {
-            try { timeUnit.sleep(1); }
-            catch (InterruptedException e) { e.printStackTrace(); }
 
-            if (Math.random()>0.6)
+            if (Math.random()>0.85)
             {
-                do tableId = (int) (Math.random() * tables.length-1 + 0);
+                do tableId = (int) (Math.random() * tables.length-1);
                 while (tables[tableId].getState()!= TableState.Free);
 
                 tables[tableId].generateOrder();
                 tables[tableId].switchState(TableState.WaitingMakingOrder);
             }
+
+            try { timeUnit.sleep(5); }
+            catch (InterruptedException e) { e.printStackTrace(); }
 
         }
 

@@ -1,7 +1,10 @@
 package com.example.dinninghallapi.tables;
 
 import com.example.dinninghallapi.order.Order;
-import com.example.dinninghallapi.DinningHallApiApplication;
+
+import java.util.concurrent.TimeUnit;
+
+import static com.example.dinninghallapi.DinningHallApiApplication.*;
 
 public class Table {
 
@@ -22,8 +25,8 @@ public class Table {
         //System.out.println("Table "+id+ " Order " +order.getId()+" was generated!");
     }
 
-    public /*synchronized*/ Order makeOrder() throws InterruptedException {
-        DinningHallApiApplication.timeUnit.sleep((long) (Math.random()*4+2));
+    public Order makeOrder() throws InterruptedException {
+        timeUnit.sleep((long) (Math.random()*4+2));
 
         state = TableState.WaitingOrder;
 
@@ -32,10 +35,21 @@ public class Table {
         return order;
     }
 
-    public /*synchronized*/ void receiveOrder() {
+    public void receiveOrder() {
         state = TableState.Free;
 
-        //System.out.println("Table "+id+" has received his order "+order.getId());
+        long pickupTime = timeUnit.convert((System.currentTimeMillis() / 1000L) - order.getPickupTime(), TimeUnit.SECONDS);
+
+        rates++;
+
+        if (pickupTime < order.getMax_wait()) rating += 5;
+        else if (pickupTime < order.getMax_wait() * 1.1) rating += 4;
+        else if (pickupTime < order.getMax_wait() * 1.2) rating += 3;
+        else if (pickupTime < order.getMax_wait() * 1.3) rating += 2;
+        else if (pickupTime < order.getMax_wait() * 1.4) rating += 1;
+
+        System.out.println("Table "+id+" has received his order "+order.getId()+" after "+ pickupTime + " " + timeUnit.name());
+        System.out.println("Rating: "+rating/rates+"*\n");
 
     }
 
@@ -43,15 +57,15 @@ public class Table {
         return id;
     }
 
-    public /*synchronized*/ Order getOrder() {
+    public Order getOrder() {
         return order;
     }
 
-    public /*synchronized*/ void switchState(TableState state) {
+    public void switchState(TableState state) {
         this.state=state;
     }
 
-    public /*synchronized*/ TableState getState() {
+    public TableState getState() {
         return state;
     }
 }

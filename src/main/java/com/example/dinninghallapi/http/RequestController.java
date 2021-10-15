@@ -16,7 +16,7 @@ public class RequestController {
     }
 
     @PostMapping (value = "/distribution", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void getOrder(@RequestBody RequestForm object){
+    public String getOrder(@RequestBody RequestForm object){
         if (waiters!=null) {
 
         int waiterId = object.getWaiter_id();
@@ -25,5 +25,6 @@ public class RequestController {
 
         waiters.get(waiterId).addFinishedOrder(tableId,orderId);
         }
+        return "Success!";
     }
 }

@@ -26,24 +26,17 @@ public class Waiter implements Runnable{
 
     private static final String url = "http://localhost:8080/order";
 
-    private RestTemplate restTemplate;
-
-    private HttpHeaders headers;
-
     private final ArrayList<Integer> tablesReady = new ArrayList<>();
 
     private final ArrayList<Integer> orderIds = new ArrayList<>();
 
+    private static final HttpHeaders headers = new HttpHeaders() {{setContentType(MediaType.APPLICATION_JSON);}};
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
     public void addFinishedOrder(int tableReady, int orderId) {
         tablesReady.add(tableReady);
         orderIds.add(orderId);
-    }
-
-    private void openConnection() {
-        restTemplate = new RestTemplate();
-        headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
     }
 
     private void sendPostRequest(JSONObject object) {
@@ -64,8 +57,6 @@ public class Waiter implements Runnable{
     public void run() {
 
         Thread.currentThread().setName("Waiter-"+id);
-
-        openConnection();
 
         Order order = null;
 
@@ -105,7 +96,7 @@ public class Waiter implements Runnable{
 
             while (!tablesReady.isEmpty()) {
                 int tableId = tablesReady.get(0);
-                System.out.println("Table "+tableId+" has received his order "+orderIds.get(0));
+                //System.out.println("Table "+tableId+" has received his order "+orderIds.get(0));
                 tables[tableId].receiveOrder();
                 tablesReady.remove(0);
                 orderIds.remove(0);

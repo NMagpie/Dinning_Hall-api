@@ -16,7 +16,11 @@ public class DinningHallApiApplication {
 
 	public static final TimeUnit timeUnit = TimeUnit.SECONDS;
 
-	public static void main(String[] args) throws InterruptedException {
+	public static float rating = 0;
+
+	public static int rates = 0;
+
+	public static void main(String[] args) {
 		SpringApplication.run(DinningHallApiApplication.class, args);
 
 		//Scanner scanner = new Scanner(System.in);
@@ -51,8 +55,6 @@ public class DinningHallApiApplication {
 		RequestController.setWaiters(waiters);
 
 		//something from http part causes starvation, and this sucks
-
-
 
 	}
 
