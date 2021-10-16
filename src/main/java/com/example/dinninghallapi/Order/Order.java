@@ -3,6 +3,7 @@ package com.example.dinninghallapi.order;
 import com.example.dinninghallapi.foods.Foods;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class Order {
 
@@ -17,6 +18,8 @@ public class Order {
     private double max_wait=0;
 
     private long pickupTime;
+
+    private long pickupTimeNs;
 
     public Order() {
 
@@ -39,7 +42,8 @@ public class Order {
     }
 
     public void setPickupTime() {
-        pickupTime= System.currentTimeMillis() / 1000L;
+        pickupTimeNs = System.nanoTime();
+        pickupTime = TimeUnit.MILLISECONDS.convert(pickupTimeNs, TimeUnit.NANOSECONDS) / 1000L;
     }
 
     public long getPickupTime() {
@@ -60,5 +64,9 @@ public class Order {
 
     public double getMax_wait() {
         return max_wait;
+    }
+
+    public long getPickupTimeNs() {
+        return pickupTimeNs;
     }
 }

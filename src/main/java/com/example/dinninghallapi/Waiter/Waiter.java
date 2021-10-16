@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.example.dinninghallapi.DinningHallApiApplication.timeUnit;
+import static com.example.dinninghallapi.DinningHallApiApplication.*;
 
 public class Waiter implements Runnable{
 
@@ -24,7 +24,7 @@ public class Waiter implements Runnable{
 
     private final ReentrantLock[] locks;
 
-    private static final String url = "http://localhost:8080/order";
+    private static final String url = getURL()+"/order";
 
     private final ArrayList<Integer> tablesReady = new ArrayList<>();
 
@@ -42,7 +42,7 @@ public class Waiter implements Runnable{
     private void sendPostRequest(JSONObject object) {
         HttpEntity<String> request = new HttpEntity<>(object.toString(),headers);
         String response = restTemplate.postForObject(url,request,String.class);
-        if (!response.equals("Success!")) {
+        if (response == null) {
             System.out.println("No response! Exiting program...");
             System.exit(0);
         }
@@ -65,7 +65,7 @@ public class Waiter implements Runnable{
         while (true) {
 
             try {
-                timeUnit.sleep( 1 );
+                getRestTime().sleep( 1 );
             }
             catch (InterruptedException e) { e.printStackTrace(); }
 
