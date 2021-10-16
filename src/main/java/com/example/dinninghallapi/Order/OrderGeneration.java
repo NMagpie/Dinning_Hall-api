@@ -3,7 +3,7 @@ package com.example.dinninghallapi.order;
 import com.example.dinninghallapi.tables.Table;
 import com.example.dinninghallapi.tables.TableState;
 
-import static com.example.dinninghallapi.DinningHallApiApplication.timeUnit;
+import static com.example.dinninghallapi.DinningHallApiApplication.getTimeUnit;
 
 public class OrderGeneration implements Runnable {
 
@@ -32,7 +32,7 @@ public class OrderGeneration implements Runnable {
                 tables[tableId].switchState(TableState.WaitingMakingOrder);
             }
 
-            try { timeUnit.sleep(5); }
+            try { getTimeUnit().sleep(5); }
             catch (InterruptedException e) { e.printStackTrace(); }
 
         }

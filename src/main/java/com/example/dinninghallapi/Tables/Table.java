@@ -26,7 +26,7 @@ public class Table {
     }
 
     public Order makeOrder() throws InterruptedException {
-        timeUnit.sleep((long) (Math.random()*4+2));
+        getTimeUnit().sleep((long) (Math.random()*4+2));
 
         state = TableState.WaitingOrder;
 
@@ -38,7 +38,9 @@ public class Table {
     public void receiveOrder() {
         state = TableState.Free;
 
-        long pickupTime = timeUnit.convert((System.currentTimeMillis() / 1000L) - order.getPickupTime(), TimeUnit.SECONDS);
+        //long pickupTime = timeUnit.convert((System.currentTimeMillis() / 1000L) - order.getPickupTime(), TimeUnit.SECONDS);
+
+        long pickupTime = getTimeUnit().convert(System.nanoTime() - order.getPickupTimeNs(), TimeUnit.NANOSECONDS);
 
         rates++;
 
@@ -48,8 +50,8 @@ public class Table {
         else if (pickupTime < order.getMax_wait() * 1.3) rating += 2;
         else if (pickupTime < order.getMax_wait() * 1.4) rating += 1;
 
-        System.out.println("Table "+id+" has received his order "+order.getId()+" after "+ pickupTime + " " + timeUnit.name());
-        System.out.println("Rating: "+rating/rates+"*\n");
+        System.out.println("Table "+id+" has received his order "+order.getId()+" after "+ pickupTime + " " + getTimeUnit().name());
+        System.out.println("Rating: "+String.format("%.2f",rating/rates)+"*\n");
 
     }
 
