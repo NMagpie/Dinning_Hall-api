@@ -11,7 +11,7 @@ public class Order {
 
     private final int id = count++;
 
-    private ArrayList<Integer> items;
+    private final ArrayList<Integer> items = new ArrayList<>();
 
     private final int priority;
 
@@ -22,8 +22,6 @@ public class Order {
     private long pickupTimeNs;
 
     public Order() {
-
-        items= new ArrayList<>();
 
         int numberOfItems = (int) (Math.random()*4+1);
 

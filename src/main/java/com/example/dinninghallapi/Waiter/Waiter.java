@@ -4,9 +4,11 @@ import com.example.dinninghallapi.order.Order;
 import com.example.dinninghallapi.tables.Table;
 import com.example.dinninghallapi.tables.TableState;
 import org.json.JSONObject;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -32,7 +34,12 @@ public class Waiter implements Runnable{
 
     private static final HttpHeaders headers = new HttpHeaders() {{setContentType(MediaType.APPLICATION_JSON);}};
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplateBuilder().build();
+
+    private static synchronized void noResponse() {
+        System.out.println("No response! Exiting program...");
+        System.exit(0);
+    }
 
     public void addFinishedOrder(int tableReady, int orderId) {
         tablesReady.add(tableReady);
@@ -41,10 +48,10 @@ public class Waiter implements Runnable{
 
     private void sendPostRequest(JSONObject object) {
         HttpEntity<String> request = new HttpEntity<>(object.toString(),headers);
-        String response = restTemplate.postForObject(url,request,String.class);
-        if (response == null) {
-            System.out.println("No response! Exiting program...");
-            System.exit(0);
+        try {
+            restTemplate.postForObject(url,request,String.class);
+        } catch (ResourceAccessException e) {
+            noResponse();
         }
     }
 
