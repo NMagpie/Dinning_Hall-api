@@ -6,6 +6,11 @@ import com.example.dinninghallapi.tables.Table;
 import com.example.dinninghallapi.waiter.Waiter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,6 +22,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @SpringBootApplication
 public class DinningHallApiApplication {
+
+	private static final String os = System.getProperty("os.name");
 
 	private static TimeUnit timeUnit;
 
@@ -45,19 +52,35 @@ public class DinningHallApiApplication {
 			tables[i] = new Table();
 		}
 
-		OrderGeneration orderGeneration = new OrderGeneration(tables);
-
-		new Thread(orderGeneration).start();
-
 		ArrayList<Waiter> waiters = new ArrayList<>();
 
-		for (int i = 0; i < tablesNumber / 1.5; i++)
+		for (int i = 0; i < tablesNumber / 2; i++)
 		{
 			waiters.add(new Waiter(tables, locks));
 			new Thread(waiters.get(i)).start();
 		}
 
 		RequestController.setWaiters(waiters);
+
+		sendTestRequest();
+
+		OrderGeneration orderGeneration = new OrderGeneration(tables);
+
+		new Thread(orderGeneration).start();
+
+/*		Scanner scanner = new Scanner(System.in);
+
+		String kek = "";
+
+		while (!kek.equals("q")) {
+			kek = scanner.nextLine();
+		}
+
+		scanner.close();
+
+		System.out.println("Exiting program...");
+
+		System.exit(0);*/
 
 	}
 
@@ -82,16 +105,16 @@ public class DinningHallApiApplication {
 
 		if (scanner.hasNextLine()) {tUnit = scanner.nextLine(); try {
 			timeUnit = TimeUnit.valueOf(tUnit);
-		} catch (IllegalArgumentException e) { parsingError(); }
-		} else { parsingError(); }
+		} catch (IllegalArgumentException e) { parsingError(1); }
+		} else { parsingError(0); }
 
-		if (scanner.hasNextLine()) URL = scanner.nextLine(); else { parsingError(); }
-		if (!URL.matches("(https?\\:\\/\\/\\w+\\:\\d{4})|((\\d{1,3}\\.){3}(\\d{1,3})(\\/\\d+)?)")) parsingError();
+		if (scanner.hasNextLine()) URL = scanner.nextLine(); else { parsingError(0); }
+		if (!URL.matches("((https?\\:\\/\\/[\\w-]+)|(((https?\\:\\/\\/)?\\d{1,3}\\.){3}(\\d{1,3})(\\/\\d+)?))\\:\\d{4}")) parsingError(2);
 
 		if (scanner.hasNextLine()) try { tablesNumber= scanner.nextInt(); }
-		catch (InputMismatchException e) { parsingError(); }
-		else { parsingError(); }
-		if (tablesNumber < 1) parsingError();
+		catch (InputMismatchException e) { parsingError(3); }
+		else { parsingError(0); }
+		if (tablesNumber < 1) parsingError(3);
 
 		scanner.close();
 
@@ -112,11 +135,25 @@ public class DinningHallApiApplication {
 		}
 	}
 
-	private static void parsingError() {
+	private static void parsingError(int intCase) {
 		System.out.println("Wrong data in config-file! Config file has to contain by lines:" +
-				"1. Time units by capslock (e.g. MILLISECONDS, SECONDS, MICROSECONDS)" +
-				"2. IPv4 address or URL of Kitchen and its port (e.g. http://localhost:8081)" +
-				"3. number of Tables in DinningHall (integer)");
+				"\n1. Time units by capslock (e.g. MILLISECONDS, SECONDS, MICROSECONDS)" +
+				"\n2. IPv4 address or URL of Kitchen and its port (e.g. http://localhost:8081)" +
+				"\n3. number of Tables in DinningHall (integer)");
+		switch (intCase) {
+			case 0:
+				System.out.println("ERROR: WRONG NUMBER OF LINES");
+				break;
+			case 1:
+				System.out.println("ERROR IN LINE 1: TIMEUNITS");
+				break;
+			case 2:
+				System.out.println("ERROR IN LINE 2: ADDRESS OR IP");
+				break;
+			case 3:
+				System.out.println("ERROR IN LINE 3: NUMBER OF TABLES");
+				break;
+		}
 		try {
 			TimeUnit.SECONDS.sleep(20);
 		} catch (InterruptedException e) {
@@ -130,5 +167,26 @@ public class DinningHallApiApplication {
 
 	public static String getURL() {
 		return URL;
+	}
+
+	private static void sendTestRequest() throws InterruptedException {
+
+		final String body = "{\n" +
+				"\"order_id\": -1,\n" +
+				"\"table_id\": 0,\n" +
+				"\"waiter_id\": 1,\n" +
+				"\"items\": [ 1 ],\n" +
+				"\"priority\": 3,\n" +
+				"\"max_wait\": 45,\n" +
+				"\"pick_up_time\": 3\n" +
+				"}\n";
+
+		RestTemplate restTemplate = new RestTemplateBuilder().build();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> request = new HttpEntity<>(body,headers);
+		restTemplate.postForObject(getURL()+"/order",request,String.class);
+
+		TimeUnit.SECONDS.sleep(5);
 	}
 }

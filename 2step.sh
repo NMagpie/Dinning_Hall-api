@@ -1,0 +1,1 @@
+docker container run --net pr-lab --publish 8081:8081 --name dinning-hall dinning-hall

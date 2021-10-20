@@ -17,8 +17,7 @@ public class RequestController {
 
     @PostMapping (value = "/distribution", consumes = MediaType.APPLICATION_JSON_VALUE)
     public String getOrder(@RequestBody RequestForm object){
-        if (waiters!=null) {
-
+        if (waiters!=null && object.getOrder_id()!=-1) {
         int waiterId = object.getWaiter_id();
         int tableId = object.getTable_id();
         int orderId = object.getOrder_id();
