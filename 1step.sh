@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Hello, blya"
+echo "Hello, User!"
 docker build -t dinning-hall dinning-hall-api/
 docker build -t kitchen kitchen-api/
 docker network create pr-lab
