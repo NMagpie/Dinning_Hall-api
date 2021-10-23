@@ -175,7 +175,7 @@ public class DinningHallApiApplication {
 				"\"order_id\": -1,\n" +
 				"\"table_id\": 0,\n" +
 				"\"waiter_id\": 1,\n" +
-				"\"items\": [ 1 ],\n" +
+				"\"items\": [ 2 ],\n" +
 				"\"priority\": 3,\n" +
 				"\"max_wait\": 45,\n" +
 				"\"pick_up_time\": 3\n" +

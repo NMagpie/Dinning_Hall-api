@@ -21,7 +21,7 @@ public class RequestForm {
 
     private int cooking_time;
 
-    private ArrayList<Map <String,Integer> > cooking_details;
+    private ArrayList<Map<String, Integer>> cooking_details;
 
     public RequestForm() {
     }

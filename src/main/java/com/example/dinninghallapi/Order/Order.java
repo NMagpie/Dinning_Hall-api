@@ -15,7 +15,7 @@ public class Order {
 
     private final int priority;
 
-    private double max_wait=0;
+    private double max_wait = 0;
 
     private long pickupTime;
 
@@ -23,19 +23,19 @@ public class Order {
 
     public Order() {
 
-        int numberOfItems = (int) (Math.random()*4+1);
+        int numberOfItems = (int) (Math.random() * 4 + 1);
 
-        while (numberOfItems>0) {
-            items.add((int) (Math.random()*9+1));
+        while (numberOfItems > 0) {
+            items.add((int) (Math.random() * 9 + 1));
             numberOfItems--;
         }
 
-        this.priority = (int) (Math.random()*4+1);
+        this.priority = (int) (Math.random() * 4 + 1);
 
         for (Integer item : items)
-            if (new Foods(item).getPreparation_time() >max_wait) max_wait= new Foods(item).getPreparation_time();
+            if (new Foods(item).getPreparation_time() > max_wait) max_wait = new Foods(item).getPreparation_time();
 
-            max_wait = 1.3 * max_wait;
+        max_wait = 1.3 * max_wait;
 
     }
 

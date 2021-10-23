@@ -26,7 +26,7 @@ public class Table {
     }
 
     public Order makeOrder() throws InterruptedException {
-        getTimeUnit().sleep((long) (Math.random()*4+2));
+        getTimeUnit().sleep((long) (Math.random() * 4 + 2));
 
         state = TableState.WaitingOrder;
 
@@ -44,14 +44,14 @@ public class Table {
 
         rates++;
 
-        if (pickupTime < order.getMax_wait()) rating += 5;
-        else if (pickupTime < order.getMax_wait() * 1.1) rating += 4;
-        else if (pickupTime < order.getMax_wait() * 1.2) rating += 3;
-        else if (pickupTime < order.getMax_wait() * 1.3) rating += 2;
-        else if (pickupTime < order.getMax_wait() * 1.4) rating += 1;
+        if (pickupTime <= order.getMax_wait()) rating += 5;
+        else if (pickupTime <= order.getMax_wait() * 1.1) rating += 4;
+        else if (pickupTime <= order.getMax_wait() * 1.2) rating += 3;
+        else if (pickupTime <= order.getMax_wait() * 1.3) rating += 2;
+        else if (pickupTime <= order.getMax_wait() * 1.4) rating += 1;
 
-        System.out.println("Table "+id+" has received his order "+order.getId()+" after "+ pickupTime + " " + getTimeUnit().name());
-        System.out.println("Rating: "+String.format("%.2f",rating/rates)+"*\n");
+        System.out.println("Table " + id + " has received his order " + order.getId() + " after " + pickupTime + " " + getTimeUnit().name());
+        System.out.println("Rating: " + String.format("%.2f", rating / rates) + "*\n");
 
     }
 
@@ -64,7 +64,7 @@ public class Table {
     }
 
     public void switchState(TableState state) {
-        this.state=state;
+        this.state = state;
     }
 
     public TableState getState() {

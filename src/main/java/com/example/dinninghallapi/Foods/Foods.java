@@ -2,7 +2,7 @@ package com.example.dinninghallapi.foods;
 
 public class Foods {
 
-    private int id;
+    private final int id;
 
     private String name;
 
@@ -15,7 +15,7 @@ public class Foods {
     public Foods(int id) {
         this.id = id;
 
-        switch (id){
+        switch (id) {
             case (1):
                 this.name = "pizza";
                 this.preparation_time = 20;
