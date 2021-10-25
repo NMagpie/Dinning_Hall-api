@@ -1,10 +1,11 @@
-package com.example.dinninghallapi.tables;
+package com.dinninghallapi.tables;
 
-import com.example.dinninghallapi.order.Order;
+import com.dinninghallapi.order.Order;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
-import static com.example.dinninghallapi.DinningHallApiApplication.*;
+import static com.dinninghallapi.DinningHallApiApplication.*;
 
 public class Table {
 
@@ -15,6 +16,8 @@ public class Table {
     private TableState state = TableState.Free;
 
     private Order order;
+
+    private ReentrantLock lock = new ReentrantLock();
 
     public Table() {
     }
@@ -38,20 +41,18 @@ public class Table {
     public void receiveOrder() {
         state = TableState.Free;
 
-        //long pickupTime = timeUnit.convert((System.currentTimeMillis() / 1000L) - order.getPickupTime(), TimeUnit.SECONDS);
-
         long pickupTime = getTimeUnit().convert(System.nanoTime() - order.getPickupTimeNs(), TimeUnit.NANOSECONDS);
 
-        rates++;
+        int rating = 0;
 
-        if (pickupTime <= order.getMax_wait()) rating += 5;
-        else if (pickupTime <= order.getMax_wait() * 1.1) rating += 4;
-        else if (pickupTime <= order.getMax_wait() * 1.2) rating += 3;
-        else if (pickupTime <= order.getMax_wait() * 1.3) rating += 2;
-        else if (pickupTime <= order.getMax_wait() * 1.4) rating += 1;
+        if (pickupTime <= order.getMax_wait()) rating = 5;
+        else if (pickupTime <= order.getMax_wait() * 1.1) rating = 4;
+        else if (pickupTime <= order.getMax_wait() * 1.2) rating = 3;
+        else if (pickupTime <= order.getMax_wait() * 1.3) rating = 2;
+        else if (pickupTime <= order.getMax_wait() * 1.4) rating = 1;
 
         System.out.println("Table " + id + " has received his order " + order.getId() + " after " + pickupTime + " " + getTimeUnit().name());
-        System.out.println("Rating: " + String.format("%.2f", rating / rates) + "*\n");
+        System.out.println("Rating: " + String.format("%.2f", addRating(rating)) + "*\n");
 
     }
 
@@ -69,5 +70,13 @@ public class Table {
 
     public TableState getState() {
         return state;
+    }
+
+    public boolean tryLock() {
+        return this.lock.tryLock();
+    }
+
+    public void unlock() {
+        this.lock.unlock();
     }
 }

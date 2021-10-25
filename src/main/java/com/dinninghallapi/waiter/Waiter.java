@@ -1,8 +1,8 @@
-package com.example.dinninghallapi.waiter;
+package com.dinninghallapi.waiter;
 
-import com.example.dinninghallapi.order.Order;
-import com.example.dinninghallapi.tables.Table;
-import com.example.dinninghallapi.tables.TableState;
+import com.dinninghallapi.order.Order;
+import com.dinninghallapi.tables.Table;
+import com.dinninghallapi.tables.TableState;
 import org.json.JSONObject;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -12,10 +12,9 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.concurrent.locks.ReentrantLock;
 
-import static com.example.dinninghallapi.DinningHallApiApplication.getRestTime;
-import static com.example.dinninghallapi.DinningHallApiApplication.getURL;
+import static com.dinninghallapi.DinningHallApiApplication.getRestTime;
+import static com.dinninghallapi.DinningHallApiApplication.getURL;
 
 public class Waiter implements Runnable {
 
@@ -26,13 +25,11 @@ public class Waiter implements Runnable {
     private static int count = 0;
     private final int id = count++;
     private final Table[] tables;
-    private final ReentrantLock[] locks;
     private final ArrayList<Integer> tablesReady = new ArrayList<>();
     private final ArrayList<Integer> orderIds = new ArrayList<>();
     private final RestTemplate restTemplate = new RestTemplateBuilder().build();
 
-    public Waiter(Table[] tables, ReentrantLock[] locks) {
-        this.locks = locks;
+    public Waiter(Table[] tables) {
         this.tables = tables;
     }
 
@@ -73,7 +70,7 @@ public class Waiter implements Runnable {
             }
 
             for (Table table : tables)
-                if ((table.getState() == TableState.WaitingMakingOrder) && (locks[table.getId()].tryLock())) {
+                if ((table.getState() == TableState.WaitingMakingOrder) && (table.tryLock())) {
                     try {
                         order = table.makeOrder();
                         System.out.println("Waiter " + id + " taken order " + order.getId() + " table " + table.getId() + " " + order.getItems() + " priority " + order.getPriority());
@@ -93,13 +90,12 @@ public class Waiter implements Runnable {
 
                     sendPostRequest(jo);
 
-                    locks[table.getId()].unlock();
+                    table.unlock();
 
                 }
 
             while (!tablesReady.isEmpty()) {
                 int tableId = tablesReady.get(0);
-                //System.out.println("Table "+tableId+" has received his order "+orderIds.get(0));
                 tables[tableId].receiveOrder();
                 tablesReady.remove(0);
                 orderIds.remove(0);

@@ -1,6 +1,6 @@
-package com.example.dinninghallapi.order;
+package com.dinninghallapi.order;
 
-import com.example.dinninghallapi.foods.Foods;
+import com.dinninghallapi.foods.Foods;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;

@@ -1,6 +1,6 @@
-package com.example.dinninghallapi.http;
+package com.dinninghallapi.http;
 
-import com.example.dinninghallapi.waiter.Waiter;
+import com.dinninghallapi.waiter.Waiter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

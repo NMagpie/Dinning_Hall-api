@@ -1,4 +1,4 @@
-package com.example.dinninghallapi.foods;
+package com.dinninghallapi.foods;
 
 public class Foods {
 

@@ -1,4 +1,4 @@
-package com.example.dinninghallapi.http;
+package com.dinninghallapi.http;
 
 import java.util.ArrayList;
 import java.util.Map;

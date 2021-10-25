@@ -1,9 +1,9 @@
-package com.example.dinninghallapi.order;
+package com.dinninghallapi.order;
 
-import com.example.dinninghallapi.tables.Table;
-import com.example.dinninghallapi.tables.TableState;
+import com.dinninghallapi.tables.Table;
+import com.dinninghallapi.tables.TableState;
 
-import static com.example.dinninghallapi.DinningHallApiApplication.getTimeUnit;
+import static com.dinninghallapi.DinningHallApiApplication.getTimeUnit;
 
 public class OrderGeneration implements Runnable {
 
