@@ -3,7 +3,8 @@ package com.dinninghallapi.waiter;
 import com.dinninghallapi.order.Order;
 import com.dinninghallapi.tables.Table;
 import com.dinninghallapi.tables.TableState;
-import org.json.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,8 +26,7 @@ public class Waiter implements Runnable {
     private static int count = 0;
     private final int id = count++;
     private final Table[] tables;
-    private final ArrayList<Integer> tablesReady = new ArrayList<>();
-    private final ArrayList<Integer> orderIds = new ArrayList<>();
+    private final ArrayList<Order> finishedOrders = new ArrayList<>();
     private final RestTemplate restTemplate = new RestTemplateBuilder().build();
 
     public Waiter(Table[] tables) {
@@ -38,17 +38,24 @@ public class Waiter implements Runnable {
         System.exit(0);
     }
 
-    public void addFinishedOrder(int tableReady, int orderId) {
-        tablesReady.add(tableReady);
-        orderIds.add(orderId);
+    public void addFinishedOrder(Order order) {
+        finishedOrders.add(order);
     }
 
-    private void sendPostRequest(JSONObject object) {
-        HttpEntity<String> request = new HttpEntity<>(object.toString(), headers);
+    private void sendPostRequest(Order order) {
         try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            String json = mapper.writeValueAsString(order);
+
+            HttpEntity<String> request = new HttpEntity<>(json, headers);
+
             restTemplate.postForObject(url, request, String.class);
+
         } catch (ResourceAccessException e) {
             noResponse();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 
@@ -57,51 +64,37 @@ public class Waiter implements Runnable {
 
         Thread.currentThread().setName("Waiter-" + id);
 
-        Order order = null;
+        Order order;
 
-        JSONObject jo;
+        try {
 
-        while (true) {
+            while (true) {
 
-            try {
                 getRestTime().sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
-            for (Table table : tables)
-                if ((table.getState() == TableState.WaitingMakingOrder) && (table.tryLock())) {
-                    try {
-                        order = table.makeOrder();
+                for (Table table : tables)
+                    if ((table.getState() == TableState.WaitingMakingOrder) && (table.tryLock())) {
+
+                        order = table.makeOrder(id);
                         System.out.println("Waiter " + id + " taken order " + order.getId() + " table " + table.getId() + " " + order.getItems() + " priority " + order.getPriority());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+
+                        sendPostRequest(order);
+
+                        table.unlock();
+
                     }
 
-                    jo = new JSONObject();
-
-                    jo.put("order_id", order.getId());
-                    jo.put("table_id", table.getId());
-                    jo.put("waiter_id", id);
-                    jo.put("items", order.getItems());
-                    jo.put("priority", order.getPriority());
-                    jo.put("max_wait", order.getMax_wait());
-                    jo.put("pick_up_time", order.getPickupTime());
-
-                    sendPostRequest(jo);
-
-                    table.unlock();
-
+                while (!finishedOrders.isEmpty()) {
+                    order = finishedOrders.get(0);
+                    int tableId = order.getTable_id();
+                    tables[tableId].receiveOrder();
+                    finishedOrders.remove(0);
                 }
 
-            while (!tablesReady.isEmpty()) {
-                int tableId = tablesReady.get(0);
-                tables[tableId].receiveOrder();
-                tablesReady.remove(0);
-                orderIds.remove(0);
             }
 
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
     }
 }

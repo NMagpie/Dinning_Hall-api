@@ -1,5 +1,6 @@
 package com.dinninghallapi.http;
 
+import com.dinninghallapi.order.Order;
 import com.dinninghallapi.waiter.Waiter;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,13 +19,10 @@ public class RequestController {
     }
 
     @PostMapping(value = "/distribution", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String getOrder(@RequestBody RequestForm object) {
-        if (waiters != null && object.getOrder_id() != -1) {
-            int waiterId = object.getWaiter_id();
-            int tableId = object.getTable_id();
-            int orderId = object.getOrder_id();
-
-            waiters.get(waiterId).addFinishedOrder(tableId, orderId);
+    public String getOrder(@RequestBody Order order) {
+        if (waiters != null && order.getId() != -1) {
+            int waiterId = order.getWaiter_id();
+            waiters.get(waiterId).addFinishedOrder(order);
         }
         return "Success!";
     }

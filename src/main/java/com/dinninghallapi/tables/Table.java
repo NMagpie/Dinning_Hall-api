@@ -5,33 +5,31 @@ import com.dinninghallapi.order.Order;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.dinninghallapi.DinningHallApiApplication.*;
+import static com.dinninghallapi.DinningHallApiApplication.addRating;
+import static com.dinninghallapi.DinningHallApiApplication.getTimeUnit;
 
 public class Table {
 
     private static int count = 0;
 
     private final int id = count++;
-
+    private final ReentrantLock lock = new ReentrantLock();
     private TableState state = TableState.Free;
-
     private Order order;
-
-    private ReentrantLock lock = new ReentrantLock();
 
     public Table() {
     }
 
     public void generateOrder() {
-        order = new Order();
-
-        //System.out.println("Table "+id+ " Order " +order.getId()+" was generated!");
+        order = new Order(id);
     }
 
-    public Order makeOrder() throws InterruptedException {
+    public Order makeOrder(int waiter_id) throws InterruptedException {
         getTimeUnit().sleep((long) (Math.random() * 4 + 2));
 
         state = TableState.WaitingOrder;
+
+        order.setWaiter_id(waiter_id);
 
         order.setPickupTime();
 
@@ -51,7 +49,7 @@ public class Table {
         else if (pickupTime <= order.getMax_wait() * 1.3) rating = 2;
         else if (pickupTime <= order.getMax_wait() * 1.4) rating = 1;
 
-        System.out.println("Table " + id + " has received his order " + order.getId() + " after " + pickupTime + " " + getTimeUnit().name());
+        System.out.println("Table " + id + " has received his order " + order.getId() + " after " + pickupTime + " " + getTimeUnit().name() + " " + rating + "*");
         System.out.println("Rating: " + String.format("%.2f", addRating(rating)) + "*\n");
 
     }

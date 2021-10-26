@@ -61,8 +61,8 @@ public class DinningHallApiApplication {
 
     public static synchronized float addRating(int mark) {
         rates++;
-        rating+=mark;
-        return rating/rates;
+        rating += mark;
+        return rating / rates;
     }
 
     public static TimeUnit getTimeUnit() {
@@ -109,7 +109,7 @@ public class DinningHallApiApplication {
             System.out.println("!WARNING! The app supports timeUnits less, than seconds," +
                     " but some POST requests can be sent for more, than 200 ms, so the" +
                     " rating of the restaurant can be lowered to 0*!");
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(1);
         }
     }
 
@@ -167,6 +167,6 @@ public class DinningHallApiApplication {
         HttpEntity<String> request = new HttpEntity<>(body, headers);
         restTemplate.postForObject(getURL() + "/order", request, String.class);
 
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(3);
     }
 }

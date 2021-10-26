@@ -92,6 +92,29 @@ public class Foods {
 
     }
 
+    public static int preparationTime(int id) {
+        switch (id) {
+            case 1:
+            case 7:
+                return 20;
+            case 2:
+            case 6:
+                return 10;
+            case 3:
+                return 7;
+            case 4:
+                return 32;
+            case 5:
+                return 35;
+            case 8:
+                return 30;
+            case 9:
+            case 10:
+                return 15;
+        }
+        return 0;
+    }
+
     public String getName() {
         return name;
     }
