@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 import static com.dinninghallapi.DinningHallApiApplication.getRestTime;
 import static com.dinninghallapi.DinningHallApiApplication.getURL;
@@ -26,11 +26,14 @@ public class Waiter implements Runnable {
     private static int count = 0;
     private final int id = count++;
     private final Table[] tables;
-    private final ArrayList<Order> finishedOrders = new ArrayList<>();
+    private final PriorityQueue<Integer> finishedOrders;
     private final RestTemplate restTemplate = new RestTemplateBuilder().build();
 
     public Waiter(Table[] tables) {
         this.tables = tables;
+
+        finishedOrders = new PriorityQueue<>();
+
     }
 
     private static synchronized void noResponse() {
@@ -38,11 +41,36 @@ public class Waiter implements Runnable {
         System.exit(0);
     }
 
-    public void addFinishedOrder(Order order) {
-        finishedOrders.add(order);
+    public void addFinishedOrder(int tableId) {
+        finishedOrders.add(tableId);
+    }
+
+    private void bringOrders() {
+
+        //TODO to change logic for receiving orders, cause it needs so much time
+
+        while (!finishedOrders.isEmpty()) {
+
+            int tableId = finishedOrders.poll();
+
+            tables[tableId].receiveOrder();
+
+        }
+
+    }
+
+    private void waitRest() {
+        try {
+            getRestTime().sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendPostRequest(Order order) {
+
+        //TODO to change restTemplate on smth
+
         try {
             ObjectMapper mapper = new ObjectMapper();
 
@@ -66,35 +94,28 @@ public class Waiter implements Runnable {
 
         Order order;
 
-        try {
+        while (true) {
 
-            while (true) {
+            for (Table table : tables) {
 
-                getRestTime().sleep(1);
+                if (table.getState() == TableState.WaitingMakingOrder && table.tryLock()) {
 
-                for (Table table : tables)
-                    if ((table.getState() == TableState.WaitingMakingOrder) && (table.tryLock())) {
+                    order = table.makeOrder(id);
 
-                        order = table.makeOrder(id);
-                        System.out.println("Waiter " + id + " taken order " + order.getId() + " table " + table.getId() + " " + order.getItems() + " priority " + order.getPriority());
+                    System.out.println("Waiter " + id + " taken order " + order.getId() + " table " + table.getId() + " " + order.getItems() + " priority " + order.getPriority());
 
-                        sendPostRequest(order);
+                    sendPostRequest(order);
 
-                        table.unlock();
+                    table.unlock();
 
-                    }
-
-                while (!finishedOrders.isEmpty()) {
-                    order = finishedOrders.get(0);
-                    int tableId = order.getTable_id();
-                    tables[tableId].receiveOrder();
-                    finishedOrders.remove(0);
                 }
+
+                bringOrders();
 
             }
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            waitRest();
+
         }
     }
 }

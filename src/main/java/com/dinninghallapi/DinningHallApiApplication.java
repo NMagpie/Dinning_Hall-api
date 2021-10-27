@@ -6,11 +6,6 @@ import com.dinninghallapi.tables.Table;
 import com.dinninghallapi.waiter.Waiter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,6 +27,7 @@ public class DinningHallApiApplication {
     private static int tablesNumber;
 
     public static void main(String[] args) throws InterruptedException {
+
         SpringApplication.run(DinningHallApiApplication.class, args);
 
         initialization();
@@ -50,8 +46,6 @@ public class DinningHallApiApplication {
         }
 
         RequestController.setWaiters(waiters);
-
-        sendTestRequest();
 
         OrderGeneration orderGeneration = new OrderGeneration(tables);
 
@@ -149,24 +143,4 @@ public class DinningHallApiApplication {
         return URL;
     }
 
-    private static void sendTestRequest() throws InterruptedException {
-
-        final String body = "{\n" +
-                "\"order_id\": -1,\n" +
-                "\"table_id\": 0,\n" +
-                "\"waiter_id\": 1,\n" +
-                "\"items\": [ 2 ],\n" +
-                "\"priority\": 3,\n" +
-                "\"max_wait\": 45,\n" +
-                "\"pick_up_time\": 3\n" +
-                "}\n";
-
-        RestTemplate restTemplate = new RestTemplateBuilder().build();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
-        restTemplate.postForObject(getURL() + "/order", request, String.class);
-
-        TimeUnit.SECONDS.sleep(3);
-    }
 }

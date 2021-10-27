@@ -20,10 +20,12 @@ public class RequestController {
 
     @PostMapping(value = "/distribution", consumes = MediaType.APPLICATION_JSON_VALUE)
     public String getOrder(@RequestBody Order order) {
+
         if (waiters != null && order.getId() != -1) {
             int waiterId = order.getWaiter_id();
-            waiters.get(waiterId).addFinishedOrder(order);
+            waiters.get(waiterId).addFinishedOrder(order.getTable_id());
         }
+
         return "Success!";
     }
 }

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-@JsonIgnoreProperties({"count", "pickupTimeNs"})
+@JsonIgnoreProperties({"count", "pickupTimeNs", "generalPriority"})
 public class Order {
 
     private static int count = 0;
@@ -50,6 +50,9 @@ public class Order {
     @Getter
     private long pickupTimeNs;
 
+    @Getter
+    private long generalPriority;
+
     public Order(int table_id) {
 
         this.id = count++;
@@ -73,14 +76,14 @@ public class Order {
     }
 
     @JsonCreator
-    public Order(@JsonProperty("order_id")        int order_id,
-                 @JsonProperty("table_id")        int table_id,
-                 @JsonProperty("waiter_id")       int waiter_id,
-                 @JsonProperty("items")           ArrayList<Integer> items,
-                 @JsonProperty("priority")        int priority,
-                 @JsonProperty("max_wait")        double max_wait,
-                 @JsonProperty("pick_up_time")    long pickupTime,
-                 @JsonProperty("cooking_time")    long cooking_time,
+    public Order(@JsonProperty("order_id") int order_id,
+                 @JsonProperty("table_id") int table_id,
+                 @JsonProperty("waiter_id") int waiter_id,
+                 @JsonProperty("items") ArrayList<Integer> items,
+                 @JsonProperty("priority") int priority,
+                 @JsonProperty("max_wait") double max_wait,
+                 @JsonProperty("pick_up_time") long pickupTime,
+                 @JsonProperty("cooking_time") long cooking_time,
                  @JsonProperty("cooking_details") ArrayList<HashMap<String, Integer>> cooking_details) {
         this.id = order_id;
         this.table_id = table_id;
@@ -91,6 +94,8 @@ public class Order {
         this.pickupTime = pickupTime;
         this.cooking_time = cooking_time;
         this.cooking_details = cooking_details;
+
+        this.generalPriority = pickupTime - priority;
     }
 
     public void setPickupTime() {

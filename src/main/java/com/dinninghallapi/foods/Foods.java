@@ -1,15 +1,22 @@
 package com.dinninghallapi.foods;
 
+import lombok.Getter;
+
 public class Foods {
 
+    @Getter
     private final int id;
 
+    @Getter
     private String name;
 
+    @Getter
     private int preparation_time;
 
+    @Getter
     private int complexity;
 
+    @Getter
     private String cooking_apparatus;
 
     public Foods(int id) {
@@ -113,22 +120,6 @@ public class Foods {
                 return 15;
         }
         return 0;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getPreparation_time() {
-        return preparation_time;
-    }
-
-    public int getComplexity() {
-        return complexity;
-    }
-
-    public String getCooking_apparatus() {
-        return cooking_apparatus;
     }
 
 }

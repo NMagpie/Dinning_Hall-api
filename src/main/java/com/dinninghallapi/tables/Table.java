@@ -24,8 +24,13 @@ public class Table {
         order = new Order(id);
     }
 
-    public Order makeOrder(int waiter_id) throws InterruptedException {
-        getTimeUnit().sleep((long) (Math.random() * 4 + 2));
+    public Order makeOrder(int waiter_id) {
+
+        try {
+            getTimeUnit().sleep((long) (Math.random() * 4 + 2));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         state = TableState.WaitingOrder;
 
