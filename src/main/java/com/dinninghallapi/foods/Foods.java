@@ -1,21 +1,28 @@
-package com.example.dinninghallapi.foods;
+package com.dinninghallapi.foods;
+
+import lombok.Getter;
 
 public class Foods {
 
-    private int id;
+    @Getter
+    private final int id;
 
+    @Getter
     private String name;
 
+    @Getter
     private int preparation_time;
 
+    @Getter
     private int complexity;
 
+    @Getter
     private String cooking_apparatus;
 
     public Foods(int id) {
         this.id = id;
 
-        switch (id){
+        switch (id) {
             case (1):
                 this.name = "pizza";
                 this.preparation_time = 20;
@@ -92,20 +99,27 @@ public class Foods {
 
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getPreparation_time() {
-        return preparation_time;
-    }
-
-    public int getComplexity() {
-        return complexity;
-    }
-
-    public String getCooking_apparatus() {
-        return cooking_apparatus;
+    public static int preparationTime(int id) {
+        switch (id) {
+            case 1:
+            case 7:
+                return 20;
+            case 2:
+            case 6:
+                return 10;
+            case 3:
+                return 7;
+            case 4:
+                return 32;
+            case 5:
+                return 35;
+            case 8:
+                return 30;
+            case 9:
+            case 10:
+                return 15;
+        }
+        return 0;
     }
 
 }

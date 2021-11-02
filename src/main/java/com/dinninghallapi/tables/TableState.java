@@ -1,4 +1,4 @@
-package com.example.dinninghallapi.tables;
+package com.dinninghallapi.tables;
 
 public enum TableState {
     Free,

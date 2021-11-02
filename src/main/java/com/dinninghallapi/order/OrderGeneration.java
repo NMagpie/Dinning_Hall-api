@@ -1,0 +1,44 @@
+package com.dinninghallapi.order;
+
+import com.dinninghallapi.tables.Table;
+import com.dinninghallapi.tables.TableState;
+
+import static com.dinninghallapi.DinningHallApiApplication.getTimeUnit;
+
+public class OrderGeneration implements Runnable {
+
+    private final Table[] tables;
+
+    public OrderGeneration(Table[] tables) {
+        this.tables = tables;
+    }
+
+    @Override
+    public void run() {
+
+        Thread.currentThread().setName("OrderGen");
+
+        int tableId;
+
+        while (true) {
+
+            if (Math.random() > 0.85) {
+                do tableId = (int) (Math.random() * tables.length - 1);
+                while (tables[tableId].getState() != TableState.Free);
+
+                tables[tableId].generateOrder();
+                tables[tableId].switchState(TableState.WaitingMakingOrder);
+            }
+
+            try {
+                getTimeUnit().sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+
+}
