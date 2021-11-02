@@ -11,47 +11,33 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-@JsonIgnoreProperties({"count", "pickupTimeNs", "generalPriority"})
-public class Order {
-
-    private static int count = 0;
-
-    @JsonProperty("order_id")
-    @Getter
-    private final int id;
+@JsonIgnoreProperties({"pickupTimeNs", "generalPriority"})
+public class Order extends AOrder {
 
     @JsonProperty("table_id")
     @Getter
-    private final int table_id;
-    @JsonProperty("priority")
-    @Getter
-    private final int priority;
+    private final Integer table_id;
+
     @JsonProperty("waiter_id")
     @Setter
     @Getter
     private int waiter_id;
-    @JsonProperty("items")
-    @Getter
-    private ArrayList<Integer> items = new ArrayList<>();
-    @JsonProperty("max_wait")
-    @Getter
-    private double max_wait = 0;
 
     @JsonProperty("pick_up_time")
     @Getter
     private long pickupTime;
 
-    @JsonProperty(value = "cooking_time", access = JsonProperty.Access.WRITE_ONLY)
-    private long cooking_time;
-
-    @JsonProperty(value = "cooking_details", access = JsonProperty.Access.WRITE_ONLY)
-    private ArrayList<HashMap<String, Integer>> cooking_details;
-
     @Getter
     private long pickupTimeNs;
 
-    @Getter
-    private long generalPriority;
+    public Order(int id, ArrayList<Integer> items, int priority, double max_wait) {
+        this.id = id;
+        this.table_id = -1;
+        this.waiter_id = -1;
+        this.items = items;
+        this.priority = priority;
+        this.max_wait = max_wait;
+    }
 
     public Order(int table_id) {
 
@@ -69,7 +55,7 @@ public class Order {
         this.priority = (int) (Math.random() * 5 + 1);
 
         for (Integer item : items)
-            if (Foods.preparationTime(item) > max_wait) max_wait = new Foods(item).getPreparation_time();
+            if (Foods.preparationTime(item) > max_wait) max_wait = Foods.preparationTime(item);
 
         max_wait = 1.3 * max_wait;
 
@@ -95,12 +81,23 @@ public class Order {
         this.cooking_time = cooking_time;
         this.cooking_details = cooking_details;
 
-        this.generalPriority = pickupTime - priority;
+        //this.generalPriority = pickupTime - priority;
     }
 
     public void setPickupTime() {
         pickupTimeNs = System.nanoTime();
-        pickupTime = TimeUnit.MILLISECONDS.convert(pickupTimeNs, TimeUnit.NANOSECONDS) / 1000L;
+        pickupTime = TimeUnit.SECONDS.convert(pickupTimeNs, TimeUnit.NANOSECONDS);
     }
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", items=" + items +
+                ", priority=" + priority +
+                ", max_wait=" + max_wait +
+                ", cooking_time=" + cooking_time +
+                ", cooking_details=" + cooking_details +
+                '}';
+    }
 }

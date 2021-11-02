@@ -20,13 +20,21 @@ import static com.dinninghallapi.DinningHallApiApplication.getURL;
 public class Waiter implements Runnable {
 
     private static final String url = getURL() + "/order";
+
     private static final HttpHeaders headers = new HttpHeaders() {{
         setContentType(MediaType.APPLICATION_JSON);
     }};
+
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     private static int count = 0;
+
     private final int id = count++;
+
     private final Table[] tables;
+
     private final PriorityQueue<Integer> finishedOrders;
+
     private final RestTemplate restTemplate = new RestTemplateBuilder().build();
 
     public Waiter(Table[] tables) {
@@ -46,8 +54,6 @@ public class Waiter implements Runnable {
     }
 
     private void bringOrders() {
-
-        //TODO to change logic for receiving orders, cause it needs so much time
 
         while (!finishedOrders.isEmpty()) {
 
@@ -69,10 +75,7 @@ public class Waiter implements Runnable {
 
     private void sendPostRequest(Order order) {
 
-        //TODO to change restTemplate on smth
-
         try {
-            ObjectMapper mapper = new ObjectMapper();
 
             String json = mapper.writeValueAsString(order);
 
@@ -85,6 +88,7 @@ public class Waiter implements Runnable {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -118,4 +122,6 @@ public class Waiter implements Runnable {
 
         }
     }
+
+
 }
