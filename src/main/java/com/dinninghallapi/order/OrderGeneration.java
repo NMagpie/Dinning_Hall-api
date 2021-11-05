@@ -11,7 +11,7 @@ public class OrderGeneration implements Runnable {
 
     private final Table[] tables;
 
-    private double chance = 0.75;
+    private double chance = 0.65;
 
     public OrderGeneration(Table[] tables) {
         this.tables = tables;
@@ -21,7 +21,7 @@ public class OrderGeneration implements Runnable {
     public void run() {
 
         if (getTimeUnit().ordinal() < TimeUnit.SECONDS.ordinal())
-            chance = 0.9;
+            chance = 0.75;
 
         Thread.currentThread().setName("OrderGen");
 

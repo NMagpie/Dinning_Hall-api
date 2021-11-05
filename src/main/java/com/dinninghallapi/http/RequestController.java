@@ -24,8 +24,6 @@ public class RequestController {
 
     private static final ObjectMapper mapperId;
 
-    private static final ObjectMapper mapper;
-
     private static final RestTemplate restTemplate;
 
     private static final HttpHeaders headers;
@@ -46,8 +44,6 @@ public class RequestController {
         SimpleModule moduleId = new SimpleModule();
         moduleId.addSerializer(OrderService.class, new V2ResponseId());
         mapperId.registerModule(moduleId);
-
-        mapper = new ObjectMapper();
 
         restTemplate = new RestTemplateBuilder().build();
         headers = new HttpHeaders();
@@ -100,26 +96,27 @@ public class RequestController {
 
     @PostMapping(value = "/v2/order", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public String getOrderS(@RequestBody OrderService orderS) throws JsonProcessingException {
+
         orderServices.add(orderS);
 
         Order order = orderS.transformToOrder();
 
-        String json = mapper.writeValueAsString(order);
-
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
+        HttpEntity<Order> entity = new HttpEntity<>(order, headers);
 
         restTemplate.postForObject(url, entity, String.class);
 
         return mapperS.writeValueAsString(orderS);
     }
 
-    @GetMapping(value = "v2/order/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/v2/order/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String giveOrderId(@PathVariable("id") int id) throws JsonProcessingException {
+
         OrderService orderS = serviceOrderById(id);
 
         if (orderS != null) {
             if (orderS.isReady()) orderServices.remove(orderS);
+
             return mapperId.writeValueAsString(orderS);
         }
 

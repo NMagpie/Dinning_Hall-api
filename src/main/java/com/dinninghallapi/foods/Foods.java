@@ -9,15 +9,20 @@ import java.util.ArrayList;
 public class Foods {
 
     @Getter
-    private static final ArrayList<Foods> menu = new ArrayList<>(10);
+    private static final ArrayList<Foods> menu = new ArrayList<>();
+
     @Getter
     private final int id;
+
     @Getter
     private final String name;
+
     @Getter
     private final int preparation_time;
+
     @Getter
     private final int complexity;
+
     @Getter
     private final String cooking_apparatus;
 

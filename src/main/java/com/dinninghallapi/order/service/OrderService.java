@@ -20,17 +20,22 @@ public class OrderService extends AOrder {
     @JsonProperty("created_time")
     @Getter
     private final long createdTime;
+
     @JsonProperty("registered_time")
     @Getter
     private final long registeredTime = System.currentTimeMillis() / 1000L;
+
     @JsonIgnore
     private final long registeredTimeNs = System.nanoTime();
+
     @JsonProperty("is_ready")
     @Getter
     @Setter
     private boolean isReady = false;
+
     @JsonProperty("estimated_waiting_time")
     private long estimatedWaitingTime;
+
     @JsonProperty("prepared_time")
     @Getter
     private long preparedTime = 0;
@@ -47,13 +52,13 @@ public class OrderService extends AOrder {
         this.createdTime = createdTime;
         this.cooking_time = 0;
         this.cooking_details = null;
+
         calculateEstTime();
 
-        //this.generalPriority = registeredTime - priority;
     }
 
     public Order transformToOrder() {
-        return new Order(id, items, priority, max_wait);
+        return new Order(id, items, priority, max_wait, registeredTime);
     }
 
     private void calculateEstTime() {
@@ -73,9 +78,9 @@ public class OrderService extends AOrder {
         long timeRemained = estimatedWaitingTime - timePassed;
 
         if (timeRemained > 0)
-            return estimatedWaitingTime - timePassed;
+            return estimatedWaitingTime - timePassed + 5;
         else
-            return 0;
+            return 5;
     }
 
     public void makePrepared(long cooking_time, ArrayList<HashMap<String, Integer>> cooking_details) {

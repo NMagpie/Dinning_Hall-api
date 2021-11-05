@@ -31,7 +31,7 @@ public class Restaurant {
     private final ArrayList<Foods> menu;
 
     @JsonProperty("rating")
-    private float generalRating;
+    private float generalRating = 0;
 
     public Restaurant(int id, String name, String address, int menuItems, ArrayList<Foods> menu) {
         this.id = id;
