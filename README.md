@@ -18,6 +18,10 @@
 ### 5. IP-address or URL of Food Ordering service with its port.
 ### 6. Number of some units (In dinning hall, number of tables, number of waiters are just two times smaller than number of tables) as integer number
 
+## Menu
+
+### User can create their custom menu, which is formed as json-file placed in repository named `menu.json`
+
 ---
 
 ## !IMPORTANT! To make both projects run properly, run `kitchen-api` first, and only then `dinning_hall-api`
