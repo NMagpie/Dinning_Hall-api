@@ -178,10 +178,12 @@ public class DinningHallApiApplication {
     private static void parsingError(int intCase) throws InterruptedException {
         if (intCase > -1)
             System.out.println("Wrong data in config-file! Config file has to contain by lines:" +
-                    "\n1. Time units by capslock (e.g. MILLISECONDS, SECONDS, MICROSECONDS)" +
-                    "\n2. Free port to be reserved for this server" +
-                    "\n3. IPv4 address or URL of Kitchen and its port (e.g. http://localhost:8081)" +
-                    "\n4. number of Tables in DinningHall (integer)");
+                    "\n1. Id and the name of the restaurant (e.g. 1 McDonald's)" +
+                    "\n2. Time units by capslock (e.g. MILLISECONDS, SECONDS, MICROSECONDS)" +
+                    "\n3. Free port to be reserved for this server" +
+                    "\n4. IPv4 address or URL of Kitchen and its port (e.g. http://localhost:8081)" +
+                    "\n5. IPv4 address or URL of Food Ordering service and its port (e.g. http://localhost:8081)" +
+                    "\n6. number of Tables in DinningHall (integer)");
 
         switch (intCase) {
             case -3:
