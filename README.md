@@ -1,4 +1,4 @@
-# Lab #1 Dinning Hall Api (second part)
+# Lab #1 Dinning Hall Api (Main part)
 
 ### Author: _Sorochin Nichita, FAF-191_
 
@@ -11,9 +11,12 @@
 ## Configure
 
 ### To run project with and configure ins values, there is a config file named `configDH.txt`, where:
-### 1. TimeUnits to run project with (written with capsLock, because represented as Enum TimeUnit in Java) e.g. MILLISECONDS, SECONDS, etc.
-### 2. IP-address or URL of other side (Kitchen) with its port. E.g. http://localhost:8080
-### 3. Number of some units (In dinning hall, number of tables, number of waiters are just two times smaller than number of tables) as integer number
+### 1. Id of the restaurant (integer number) and name of the restaurant (e.g. 1 McDonald's)
+### 2. TimeUnits to run project with (written with capsLock, because represented as Enum TimeUnit in Java) e.g. MILLISECONDS, SECONDS, etc.
+### 3. Free port to be reserved for this server.
+### 4. IP-address or URL of other side (Kitchen) with its port. E.g. http://localhost:8080
+### 5. IP-address or URL of Food Ordering service with its port.
+### 6. Number of some units (In dinning hall, number of tables, number of waiters are just two times smaller than number of tables) as integer number
 
 ---
 
