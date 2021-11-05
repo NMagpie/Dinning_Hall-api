@@ -30,13 +30,14 @@ public class Order extends AOrder {
     @Getter
     private long pickupTimeNs;
 
-    public Order(int id, ArrayList<Integer> items, int priority, double max_wait) {
+    public Order(int id, ArrayList<Integer> items, int priority, double max_wait, long pickupTime) {
         this.id = id;
         this.table_id = -1;
         this.waiter_id = -1;
         this.items = items;
         this.priority = priority;
         this.max_wait = max_wait;
+        this.pickupTime = pickupTime;
     }
 
     public Order(int table_id) {

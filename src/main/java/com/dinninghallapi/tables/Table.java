@@ -63,10 +63,6 @@ public class Table {
         return id;
     }
 
-    public Order getOrder() {
-        return order;
-    }
-
     public void switchState(TableState state) {
         this.state = state;
     }

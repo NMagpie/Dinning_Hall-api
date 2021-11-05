@@ -2,7 +2,6 @@ package com.dinninghallapi;
 
 import com.dinninghallapi.foods.Foods;
 import com.dinninghallapi.http.RequestController;
-import com.dinninghallapi.order.Order;
 import com.dinninghallapi.order.OrderGeneration;
 import com.dinninghallapi.order.service.OrderService;
 import com.dinninghallapi.tables.Table;
@@ -18,6 +17,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,12 +32,13 @@ import java.util.concurrent.TimeUnit;
 public class DinningHallApiApplication {
 
     private static final SpringApplication app = new SpringApplication(DinningHallApiApplication.class);
+    private static final ArrayList<OrderService> orderServices = new ArrayList<>();
     private static Restaurant restaurant;
     private static TimeUnit timeUnit;
     private static TimeUnit restTime;
-    private static String URL;
+    private static String URLKitchen;
+    private static String URLFoodOrder;
     private static int tablesNumber;
-    private static final ArrayList<OrderService> orderServices = new ArrayList<>();
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -60,13 +61,14 @@ public class DinningHallApiApplication {
             new Thread(waiters.get(i)).start();
         }
 
-        RequestController.setUrl(URL);
+        RequestController.setUrl(URLKitchen);
 
         RequestController.setOrderServices(orderServices);
 
         RequestController.setWaiters(waiters);
 
-        sendTestRequest();
+        if (timeUnit.ordinal() < TimeUnit.SECONDS.ordinal())
+            sendTestRequest();
 
         OrderGeneration orderGeneration = new OrderGeneration(tables);
 
@@ -105,21 +107,28 @@ public class DinningHallApiApplication {
 
             String port = scanner.nextLine();
 
-            if (!port.matches("^\\d{4}$"))
+            if (!port.matches("^\\d{4,5}$"))
                 parsingError(3);
 
             app.setDefaultProperties(Collections.singletonMap("server.port", port));
 
             app.run();
 
-            URL = scanner.nextLine();
+            URLKitchen = scanner.nextLine();
 
-            if (!URL.matches("((https?://[\\w-]+)|(((https?://)?\\d{1,3}\\.){3}(\\d{1,3})(/\\d+)?)):\\d{4}"))
+            if (!URLKitchen.matches("((https?://[\\w-]+)|(((https?://)?\\d{1,3}\\.){3}(\\d{1,3})(/\\d+)?)):\\d{4,5}"))
                 parsingError(4);
+
+            URLFoodOrder = scanner.nextLine();
+
+            if (!URLFoodOrder.matches("((https?://[\\w-]+)|(((https?://)?\\d{1,3}\\.){3}(\\d{1,3})(/\\d+)?)):\\d{4,5}"))
+                parsingError(5);
+
+            URLFoodOrder += "/register";
 
             tablesNumber = scanner.nextInt();
 
-            if (tablesNumber < 1) parsingError(5);
+            if (tablesNumber < 1) parsingError(6);
 
             scanner.close();
 
@@ -129,12 +138,13 @@ public class DinningHallApiApplication {
 
             String address = "localhost:" + port;
 
-            //OR address = Inet4Address.getLocalHost().getHostAddress()+":"+port;
+            //OR address = Inet4Address.getLocalHost().getHostAddress() + ":" + port;
+            //OR address = "http://dinning-hall:" + port;
 
             restaurant = new Restaurant(id, name, address, menu.size(), menu);
 
         } catch (InputMismatchException e) {
-            parsingError(5);
+            parsingError(6);
         } catch (NoSuchElementException e) {
             parsingError(0);
         } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
@@ -196,10 +206,11 @@ public class DinningHallApiApplication {
                 System.out.println("ERROR IN LINE 3: Port of this server");
                 break;
             case 4:
-                System.out.println("ERROR IN LINE 4: ADDRESS OR IP");
-                break;
             case 5:
-                System.out.println("ERROR IN LINE 5: NUMBER OF TABLES");
+                System.out.println("ERROR IN LINE " + intCase + ": ADDRESS OR IP");
+                break;
+            case 6:
+                System.out.println("ERROR IN LINE 6: NUMBER OF TABLES");
                 break;
         }
 
@@ -208,6 +219,7 @@ public class DinningHallApiApplication {
     }
 
     private static void sendTestRequest() throws InterruptedException {
+
         final String body = "{\n" +
                 "\"order_id\": -1,\n" +
                 "\"table_id\": 0,\n" +
@@ -217,12 +229,14 @@ public class DinningHallApiApplication {
                 "\"max_wait\": 45,\n" +
                 "\"pick_up_time\": 3\n" +
                 "}\n";
+
         RestTemplate restTemplate = new RestTemplateBuilder().build();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(body, headers);
+
         try {
-            restTemplate.postForObject(URL + "/order", request, String.class);
+            restTemplate.postForObject(URLKitchen + "/order", request, String.class);
         } catch (RestClientException e) {
             noResponse();
         }
@@ -230,14 +244,14 @@ public class DinningHallApiApplication {
         TimeUnit.SECONDS.sleep(3);
     }
 
-    private static void registerRestaurant() throws InterruptedException {
+    private static void registerRestaurant() {
 
-        int ordersNumber = 6;
+/*        int ordersNumber = 1;
 
         if (timeUnit.ordinal() < TimeUnit.SECONDS.ordinal()) ordersNumber = 501;
         while (Order.getCount() < ordersNumber) {
             restTime.sleep(10000);
-        }
+        }*/
 
         RestTemplate restTemplate = new RestTemplateBuilder().build();
 
@@ -252,11 +266,11 @@ public class DinningHallApiApplication {
 
             HttpEntity<String> request = new HttpEntity<>(json, headers);
 
-            restTemplate.postForObject(URL, request, String.class);
+            restTemplate.postForObject(URLFoodOrder, request, String.class);
 
         } catch (JsonProcessingException e) {
             System.out.println("Error processing the JSON file!");
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | ResourceAccessException e) {
             System.out.println("There is no Food Ordering Service!");
         }
 
@@ -275,8 +289,8 @@ public class DinningHallApiApplication {
         return restTime;
     }
 
-    public static String getURL() {
-        return URL;
+    public static String getURLKitchen() {
+        return URLKitchen;
     }
 
     public static Restaurant getRestaurant() {

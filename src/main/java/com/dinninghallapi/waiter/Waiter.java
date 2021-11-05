@@ -3,29 +3,27 @@ package com.dinninghallapi.waiter;
 import com.dinninghallapi.order.Order;
 import com.dinninghallapi.tables.Table;
 import com.dinninghallapi.tables.TableState;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.PriorityQueue;
 
 import static com.dinninghallapi.DinningHallApiApplication.getRestTime;
-import static com.dinninghallapi.DinningHallApiApplication.getURL;
+import static com.dinninghallapi.DinningHallApiApplication.getURLKitchen;
 
 public class Waiter implements Runnable {
 
-    private static final String url = getURL() + "/order";
+    private static final String url = getURLKitchen() + "/order";
 
     private static final HttpHeaders headers = new HttpHeaders() {{
         setContentType(MediaType.APPLICATION_JSON);
     }};
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     private static int count = 0;
 
@@ -77,16 +75,12 @@ public class Waiter implements Runnable {
 
         try {
 
-            String json = mapper.writeValueAsString(order);
-
-            HttpEntity<String> request = new HttpEntity<>(json, headers);
+            HttpEntity<Order> request = new HttpEntity<>(order, headers);
 
             restTemplate.postForObject(url, request, String.class);
 
-        } catch (ResourceAccessException e) {
+        } catch (ResourceAccessException | HttpServerErrorException | HttpClientErrorException e) {
             noResponse();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
         }
 
     }
