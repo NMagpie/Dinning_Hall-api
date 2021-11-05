@@ -24,7 +24,12 @@
 
 ---
 
-## !IMPORTANT! To make both projects run properly, run `kitchen-api` first, and only then `dinning_hall-api`
+## !IMPORTANT! To make both projects run properly, run `kitchen-api` first, and only then `dinning_hall-api`. To launch with `food ordering service` and `client service` run projects in proposed order:
+
+### 1. Food Ordering service
+### 2. Kitchen
+### 3. Dinning-Hall
+### 4. Client Service
 
 ### If you want to run both projects in docker, in `dinning_hall-api` repository is located Shell script.
 ### 1. Clone both projects' directories into one general directory. 
